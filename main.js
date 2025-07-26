@@ -4,6 +4,7 @@ class BlockController {
     this.addButton = document.querySelector(addBtnSelector);
     this.removeButton = document.querySelector(removeBtnSelector);
     this.maxBlocks = maxBlocks;
+    this.lastValue = initialCount > 0 ? initialCount - 1 : -1;
 
     this.init(initialCount);
     this.addListeners();
@@ -16,14 +17,13 @@ class BlockController {
     return block;
   }
 
-  getBlockValue(element) {
+  getBlockValue(element) {  
     return element ? +element.textContent : 0;
   }
 
   addBlock() {
-    const lastBlock = this.container.lastElementChild;
-    const nextValue = this.getBlockValue(lastBlock) + 1;
-    this.container.appendChild(this.createBlock(nextValue));
+    this.lastValue += 1;
+    this.container.appendChild(this.createBlock(this.lastValue));
     this.removeOverflow();
   }
 
@@ -39,6 +39,10 @@ class BlockController {
     }
 
     lastBlock.remove();
+
+    if (this.container.children.length === 0) {
+      this.lastValue = -1;
+    }
   }
 
   removeOverflow() {
@@ -49,9 +53,11 @@ class BlockController {
   }
 
   init(count) {
-    for (let i = 0; i < count; i++) {
+    let i = count > this.maxBlocks ? count - this.maxBlocks : 0;
+    for (; i < count; i++) {
       this.container.appendChild(this.createBlock(i));
     }
+    this.lastValue = count - 1;
   }
 
   addListeners() {
@@ -65,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     containerSelector: '.container',
     addBtnSelector: '.button__add',
     removeBtnSelector: '.button_remove',
-    initialCount: 4,
+    initialCount: 3,
     maxBlocks: 5
   });
 });
